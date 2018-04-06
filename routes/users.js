@@ -20,15 +20,13 @@ router.post('/signup', (req, res) => {
   if (!/\S+@\S+[\.\S+]*/.test(email))
     return res.render('signup',{ title: 'Sign Up','error':'Email không hợp lệ'})
     
-  var userData = new Users({
+  var userData = {
     username: username,
     email: email,
     password: password1
-  })
-  userData.save((err) => {
-    if (err) return console.log(err)
-    return res.redirect('/blog')
-  })
+  }
+  Users.create(userData);
+  res.redirect('/blog');
 })
 router.get('/login', (req, res) => {
   console.log(req.session)
@@ -39,26 +37,19 @@ router.get('/login', (req, res) => {
 router.post('/login', (req, res) => {
   email = req.body.email;
   password = req.body.password;
-  Users.findOne({'email' : email}, (err, user) => {
-    if (err) return console.log(err)
-    user.comparePassword(password, function(err, isMatch) {
-      if (err) return console.log(err)
-      if (isMatch) {
-        req.session.user = user;
-        console.log(req.session.user)
-        res.redirect('/blog')
-      } else res.render('login',{ title: 'Login','error':'Mật khẩu không chính xác' })
-    })
+  Users.findOne({where: {email: email}}).then(user => {
+    isMatch = user.comparePassword(password);
+    if (isMatch) {
+      //save user in session
+      req.session.user = user;
+      res.redirect('/blog')
+    } else res.render('login',{ title: 'Login','error':'Mật khẩu không chính xác' })
+  }).catch(err => {
+    res.render('login',{ title: 'Login','error':'Tài khoản hoặc mật khẩu không đúng' })
   })
-})
+});
 router.get('/logout', (req, res) => {
   req.session.user = null;
   res.redirect('/blog')
 })
 module.exports = router;
-router.get('/login1', (req, res) => {
-  console.log(req.session)
-  if (req.session.user)
-    return res.redirect('/blog')
-  res.render('login1',{ title: 'Login','error':'' })
-})

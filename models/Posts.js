@@ -1,9 +1,27 @@
-var mongoose = require('./db'), 
-    Schema = mongoose.Schema;
-    
-var PostSchema = new Schema({
-    title: {type: String, required: true, unique : true, dropDups: true},
-    body: {type: String, required: true},
-    date: {type: Date, default: Date.now}
+const sequelize = require('./db');
+const Sequelize = require('sequelize');
+const slug = require('slug');
+
+//define Post table in MySQL
+const PostSchema = sequelize.define('post', {
+    id: {type: Sequelize.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true},
+    slug: {type: Sequelize.STRING},
+    title: {type: Sequelize.STRING, allowNull: false},
+    body: {type: Sequelize.STRING, allowNull: false, unique: true},
+    date: {type: Sequelize.DATE, defaultValue: Sequelize.NOW}
+}, {
+    // don't add the timestamp attributes (updatedAt, createdAt)
+    timestamps: false,
+    hooks: {
+        //after create user we will create slug value
+        afterCreate: (post, options) => {
+                title = post.title
+                id = post.id
+                post.slug = slug(`${title} ${id}`)
+                post.save()
+        }
+    }
 });
-module.exports = mongoose.model('Posts', PostSchema);
+//create table if it doesn't exist
+sequelize.sync();
+module.exports = PostSchema;

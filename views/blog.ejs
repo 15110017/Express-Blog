@@ -1,9 +1,8 @@
 <% extend('base') %>
 
 <% if (posts[0]) { %>
-<h4>daads</h4>
 <% posts.forEach(function(post){ %>
-    <h3 ><a href="blog/<%= post.title %>"><%= post.title %></a></h3>
+    <h3 ><a href="blog/<%= post.slug %>"><%= post.title %></a></h3>
     <h6><%= post.date %></h6>
 <% }); %>
 <% } else { %>

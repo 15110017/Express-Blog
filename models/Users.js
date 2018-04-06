@@ -1,26 +1,28 @@
-var mongoose = require('./db'),
-    Schema = mongoose.Schema;
+const sequelize = require('./db');
+const Sequelize = require('sequelize')
 var bcrypt = require('bcrypt');
 
-var UserSchema = new Schema({
-    username: {type: String, required: true, unique : true, dropDups: true},
-    email: {type: String, required: true},
-    password: {type: String}
-});
-UserSchema.pre('save', function (next) {
-    var user = this
-    bcrypt.hash(user.password, 10, (err, hash) => {
-        if (err) return console.log(err);
-        user.password = hash;
-        next();
-    }); 
-});
-UserSchema.methods.comparePassword = function (candidatePassword, cb) {
-    bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
-        if (err) return cb(err);
-        cb(null, isMatch);
-    })
-};
-
-
-module.exports = mongoose.model('Users', UserSchema);
+//define User table in MySQL
+const UserSchema = sequelize.define('user', {
+    id: {type: Sequelize.INTEGER, autoIncrement: true, primaryKey: true },
+    username: {type: Sequelize.STRING, allowNull: false, unique: true},
+    email: {type: Sequelize.STRING, allowNull: false, unique: true},
+    password: {type: Sequelize.STRING, allowNull: false}
+},{
+    hooks: {
+        //before create user we will encrypt password
+        beforeCreate: (user, options) => {
+            return bcrypt.hash(user.password, 10).then(hash => {
+                //change encoded password
+                user.password = hash
+            })    
+        }
+    }
+})
+UserSchema.prototype.comparePassword = function(candidatePassword) {
+    console.log(this.password)
+    return bcrypt.compare(candidatePassword, this.password)
+}
+//create table if it doesn't exist
+sequelize.sync();
+module.exports = UserSchema;

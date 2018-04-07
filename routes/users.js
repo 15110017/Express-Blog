@@ -6,7 +6,9 @@ router.get('/', function(req, res, next) {
   res.redirect('/')
 });
 router.get('/signup', (req, res) => {
-  res.render('signup',{ title: 'Sign Up','error':'' })
+  if (req.session.user)
+    res.redirect('/')
+  res.render('signup',{ title: 'Sign Up','error':'', isLogin: false })
 });
 router.post('/signup', (req, res) => {
   username = req.body.username;
@@ -29,10 +31,9 @@ router.post('/signup', (req, res) => {
   res.redirect('/blog');
 })
 router.get('/login', (req, res) => {
-  console.log(req.session)
   if (req.session.user)
     return res.redirect('/blog')
-  res.render('login',{ title: 'Login','error':'' })
+  res.render('login',{ title: 'Login','error':'', isLogin: false })
 })
 router.post('/login', (req, res) => {
   email = req.body.email;
@@ -43,9 +44,9 @@ router.post('/login', (req, res) => {
       //save user in session
       req.session.user = user;
       res.redirect('/blog')
-    } else res.render('login',{ title: 'Login','error':'Mật khẩu không chính xác' })
+    } else res.render('login',{ title: 'Login','error':'Mật khẩu không chính xác', isLogin: false  })
   }).catch(err => {
-    res.render('login',{ title: 'Login','error':'Tài khoản hoặc mật khẩu không đúng' })
+    res.render('login',{ title: 'Login','error':'Tài khoản hoặc mật khẩu không đúng', isLogin: false  })
   })
 });
 router.get('/logout', (req, res) => {

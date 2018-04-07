@@ -20,7 +20,6 @@ const UserSchema = sequelize.define('user', {
     }
 })
 UserSchema.prototype.comparePassword = function(candidatePassword) {
-    console.log(this.password)
     return bcrypt.compare(candidatePassword, this.password)
 }
 //create table if it doesn't exist

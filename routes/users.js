@@ -1,4 +1,4 @@
-var express = require('express');
+const express = require('express');
 var router = express.Router();
 var Users = require('../models/Users');
 /* GET users listing. */
@@ -40,6 +40,7 @@ router.post('/login', (req, res) => {
   password = req.body.password;
   Users.findOne({where: {email: email}}).then(user => {
     isMatch = user.comparePassword(password);
+    console.log('---------------------------isMatch='+isMatch);
     if (isMatch) {
       //save user in session
       req.session.user = user;

@@ -8,7 +8,7 @@ router.get('/', function(req, res) {
     if (req.session.user)
         isLogin = true
     Posts.findAll().then(posts => {
-        res.render('blog', { title: 'Blog', posts: posts, isLogin: isLogin });
+        res.render('blog', { title: 'Blog', posts: posts.reverse(), isLogin: isLogin });
     })
 });
 router.get('/create',isAuthorized, (req, res) => {
@@ -61,13 +61,12 @@ router.get('/:slug/delete',isAuthorized , (req, res) => {
         res.render('delete', { title: 'Delete', post: post, isLogin: isLogin })
     });
 });
-router.post('/:title/delete', (req, res) => {
+router.post('/:slug/delete', (req, res) => {
     let slug = req.params.slug
     Posts.findOne({
         where: {slug: slug}
     }).then(post => {
-        post.destroy();
-        res.redirect('/blog')
+        post.destroy().then(()=>res.redirect('/blog'));
     });
 });
 module.exports = router;

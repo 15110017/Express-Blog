@@ -12,6 +12,8 @@ const PostSchema = sequelize.define('post', {
 }, {
     // don't add the timestamp attributes (updatedAt, createdAt)
     timestamps: false,
+    charset: 'utf8',
+    collate: 'utf8_general_ci', 
     hooks: {
         //after create user we will create slug value
         afterCreate: (post, options) => {
@@ -23,5 +25,5 @@ const PostSchema = sequelize.define('post', {
     }
 });
 //create table if it doesn't exist
-sequelize.sync();
+sequelize.sync({alter: true});
 module.exports = PostSchema;

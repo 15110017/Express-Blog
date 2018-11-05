@@ -1,2 +1,2 @@
 # Express-Blog
-Blog made by Express, Mongo
+Blog made by Express, MySQL

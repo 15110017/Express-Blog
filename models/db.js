@@ -3,7 +3,7 @@ const Sequelize = require('sequelize')
 const sequelize = new Sequelize('express', 'root', '1234', {
     host: 'localhost',
     dialect: 'mysql',
-    host: 3306
+    port: 3306
 });
 //test connect database
 sequelize.authenticate().then(() => {
